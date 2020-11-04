@@ -8,6 +8,22 @@ chrome.extension.sendMessage({}, function(response) {
 		// alert("hello!!!!!!")
 		// ----------------------------------------------------------
 
+		// Check performance support
+		if (performance === undefined) {
+			console.log("performance NOT supported")
+			return
+		}
+	
+		// Get a list of "resource" performance entries
+		let resources = performance.getEntriesByType("resource")
+		if (resources === undefined || resources.length <= 0) {
+			console.log("there are NO `resource` performance records")
+			return
+		}
+	
+		for (let i = 0; i < resources.length; i++) {
+			console.log(resources[i].name) // these are urls of requests
+		}
 	}
 	}, 10)
 })
