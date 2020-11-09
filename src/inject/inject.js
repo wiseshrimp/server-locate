@@ -58,6 +58,17 @@ let getDirections = () => {
 						}
 					}
 				})
+				map.addSource('endpoints', {
+					type: 'geojson',
+					'data': {
+						'type': 'Feature',
+						'properties': {},
+						'geometry': {
+							'type': 'Point',
+							'coordinates': [userCoords.long, userCoords.lat]
+						}
+					}
+				})
 			} else {
 				map.addSource('route', {
 					'type': 'geojson',
@@ -70,6 +81,7 @@ let getDirections = () => {
 						}
 					}
 				})
+				
 			}
 			map.addLayer({
 				'id': 'route',
@@ -82,6 +94,16 @@ let getDirections = () => {
 				'paint': {
 					'line-color': '#FE4473',
 					'line-width': 5
+				}
+			})
+
+			map.addLayer({
+				'id': 'endpoints',
+				'type': 'circle',
+				'source': 'endpoints',
+				'paint': {
+					'circle-radius': 10,
+					'circle-color': '#B42222'
 				}
 			})
 		})
