@@ -35,6 +35,8 @@
         "js/jquery/jquery.min.js",
         "src/mapboxgl/mapboxgl.js",
         "src/mapboxgl/polyline.js",
+        "src/mapboxgl/turf.js",
+        "src/inject/testdata.js",
         "src/inject/inject.js"
       ],
       "css": [
@@ -42,5 +44,6 @@
         "src/inject/inject.css"
       ]
     }
-  ]
+  ],
+  "web_accessible_resources": ["src/inject/home.png", "src/inject/cloud.png"]
 }
