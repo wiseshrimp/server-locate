@@ -33,7 +33,14 @@
         "http://*/*"
       ],
       "js": [
+        "js/jquery/jquery.min.js",
+        "src/mapboxgl/mapboxgl.js",
+        "src/mapboxgl/polyline.js",
         "src/inject/inject.js"
+      ],
+      "css": [
+        "src/mapboxgl/mapboxgl.css",
+        "src/inject/inject.css"
       ]
     }
   ]
