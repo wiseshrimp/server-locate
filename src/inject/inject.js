@@ -4,14 +4,13 @@ let userCoords = {
 }
 
 let map
-let MAPBOX_TOKEN = 
+let MAPBOX_TOKEN = ''
+let IPSTACK_KEY = ''
 
 // Get user geolocation
 function successCallback (data) {
 	userCoords.lat = data.coords.latitude
 	userCoords.long = data.coords.longitude
-	getDirections()
-
 }
 
 function errorCallback (err) {
@@ -40,14 +39,19 @@ function errorCallback (err) {
 	})
 })();
 
-let getDirections = () => {
+let getDirections = (destination, name) => {
 	if (userCoords.lat && userCoords.long) {
-		let url = `https://api.mapbox.com/directions/v5/mapbox/driving/${userCoords.long},${userCoords.lat};-122.486052,37.830348?access_token=${MAPBOX_TOKEN}`
+		let url = `https://api.mapbox.com/directions/v5/mapbox/driving/${userCoords.long},${userCoords.lat};${destination.long},${destination.lat}?access_token=${MAPBOX_TOKEN}`
+		console.log(url)
 		$.get(url, data => {
+			const routeID = `route-${name}`
+			const endpointsID = `endpoints-${name}`
+
+			// add route if queried, straight line otherwise
 			if (data.routes.length) {
 				let coords = polyline.toGeoJSON(data.routes[0].geometry)
 
-				map.addSource('route', {
+				map.addSource(routeID, {
 					'type': 'geojson',
 					'data': {
 						'type': 'Feature',
@@ -58,49 +62,63 @@ let getDirections = () => {
 						}
 					}
 				})
-				map.addSource('endpoints', {
-					type: 'geojson',
-					'data': {
-						'type': 'Feature',
-						'properties': {},
-						'geometry': {
-							'type': 'Point',
-							'coordinates': [userCoords.long, userCoords.lat]
-						}
-					}
-				})
 			} else {
-				map.addSource('route', {
+				map.addSource(routeID, {
 					'type': 'geojson',
 					'data': {
 						'type': 'Feature',
 						'properties': {},
 						'geometry': {
 							'type': 'LineString',
-							'coordinates': [] // Add coords from urls
+							'coordinates': [[userCoords.long, userCoords.lat], [destination.long, destination.lat]]
 						}
 					}
 				})
-				
 			}
+
+			// add start and end points
+			map.addSource(endpointsID, {
+				type: 'geojson',
+
+				'data': {
+					'type': 'FeatureCollection',
+					'features': [{
+						'type': 'Feature',
+						'properties': {},
+						'geometry': {
+							'type': 'Point',
+							'coordinates': [userCoords.long, userCoords.lat]
+						}
+					},
+					{
+						'type': 'Feature',
+						'properties': {},
+						'geometry': {
+							'type': 'Point',
+							'coordinates': [destination.long, destination.lat]
+						}
+					}]
+				}
+			})
+
 			map.addLayer({
-				'id': 'route',
+				'id': routeID,
 				'type': 'line',
-				'source': 'route',
+				'source': routeID,
 				'layout': {
 					'line-join': 'round',
 					'line-cap': 'round'
 				},
 				'paint': {
 					'line-color': '#FE4473',
-					'line-width': 5
+					'line-width': 5,
 				}
 			})
 
 			map.addLayer({
-				'id': 'endpoints',
+				'id': endpointsID,
 				'type': 'circle',
-				'source': 'endpoints',
+				'source': endpointsID,
 				'paint': {
 					'circle-radius': 10,
 					'circle-color': '#B42222'
@@ -131,8 +149,24 @@ chrome.extension.sendMessage({}, function(response) {
 			console.log("there are NO `resource` performance records")
 			return
 		}
+
+		let domains = {}
 		for (let i = 0; i < resources.length; i++) {
 			// console.log(resources[i].name) // these are urls of requests
+			let domain = (new URL(resources[i].name)).hostname
+			if (domains[domain]) domains[domain]++
+			else domains[domain] = 1
+		}
+
+		// let mainDomain = Object.keys(domains).reduce((a, b) => domains[a] > domains[b] ? a : b)
+		// console.log(mainDomain)
+		for (let domain in domains) {
+			fetch(`https://api.ipstack.com/${domain}?access_key=${IPSTACK_KEY}`)
+				.then(response => response.json())
+				.then(data => {
+					console.log(data)
+					getDirections({ long: data.longitude, lat: data.latitude }, `-${domain}`)
+				})
 		}
 	}
 	}, 10)
