@@ -5,6 +5,10 @@ let userCoords = {
 
 let map
 let totalDistance = 0
+let canvas, ctx, isCapturing = true, isImgLoaded
+let mousePosition = []
+let cursorImg = new Image()
+
 
 // Get user geolocation
 function successCallback (data) {
@@ -27,6 +31,47 @@ function getRandomColor() {
 	return 'hsl(' + hue + ', 100%, 80%)'
 }
 
+(function createCanvas() {
+	canvas = document.createElement('canvas')
+	canvas.id = 'mouse'
+	canvas.width = window.innerWidth
+	canvas.height = window.innerHeight
+	ctx = canvas.getContext('2d')
+	cursorImg.onload = () => {
+		isImgLoaded = true
+	}
+	cursorImg.src = chrome.extension.getURL('src/inject/cursor.png')
+})();
+
+(function attachListeners() {
+	if (isCapturing) {
+		document.addEventListener('mousemove', onMouseMove)
+	}
+})();
+
+function onMouseMove (ev) {
+	mousePosition.push({
+		x: ev.clientX,
+		y: ev.clientY
+	})
+}
+
+setTimeout(renderVideo, 20000)
+
+function renderVideo() {
+	document.body.appendChild(canvas)
+	isCapturing = false
+	setInterval(draw, 10)
+}
+
+let idx = 0
+
+function draw() {
+	if (!mousePosition.length && !isImgLoaded) return
+	ctx.clearRect(0, 0, canvas.width, canvas.height)
+	ctx.drawImage(cursorImg, mousePosition[idx].x, mousePosition[idx].y, 25, 25)
+	idx = idx === mousePosition.length - 1 ? 0 : idx + 1
+}
 
 // MapboxGL map
 (function createMap() {

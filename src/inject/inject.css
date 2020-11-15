@@ -3,13 +3,13 @@
  **/
 
 #serverMap {
-    position: fixed;
+    /* position: fixed;
     top: 0;
     left: 0;
     z-index: 1000 !important;
     height: 100vh;
     width: 100vw;
-    opacity: 0.8;
+    opacity: 0.8; */
 }
 
 #distanceRoutes {
@@ -27,4 +27,13 @@
 
 #distanceNum {
     padding: 0 10px;
+}
+
+#mouse {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 100;
 }

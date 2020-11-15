@@ -45,5 +45,5 @@
       ]
     }
   ],
-  "web_accessible_resources": ["src/inject/home.png", "src/inject/cloud.png"]
+  "web_accessible_resources": ["src/inject/home.png", "src/inject/cursor.png", "src/inject/cloud.png"]
 }
