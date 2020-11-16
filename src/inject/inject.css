@@ -12,6 +12,14 @@
     opacity: 0.8; */
 }
 
+#download-link {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    visibility: hidden;
+}
+
 #distanceRoutes {
     position: fixed;
     z-index: 1000;

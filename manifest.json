@@ -17,7 +17,8 @@
   "options_page": "src/options_custom/index.html",
   "page_action": {
     "default_icon": "icons/icon19.png",
-    "default_title": "page action demo"
+    "default_title": "page action demo",
+    "default_popup": "src/page_action/page_action.html"
   },
   "permissions": [
     "cookies",
@@ -45,5 +46,5 @@
       ]
     }
   ],
-  "web_accessible_resources": ["src/inject/home.png", "src/inject/cursor.png", "src/inject/cloud.png"]
+  "web_accessible_resources": ["src/inject/home.png", "src/inject/cursor.png", "src/inject/pointer.png"]
 }
